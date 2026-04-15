@@ -1,12 +1,11 @@
 <div class="bg-gray-100 min-h-screen p-8 font-sans">
     <div class="max-w-6xl mx-auto">
         <div class="border-b-2 border-blue-900 mb-8 pb-4">
-            <h1 class="text-3xl font-light text-gray-800 uppercase tracking-wide">Control de Asistencia Institucional
+            <h1 class="text-3xl font-light text-gray-800 uppercase tracking-wide">Control de Asistencia
             </h1>
-            <p class="text-sm text-gray-500 uppercase">Sistema de Monitoreo en Tiempo Real</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 items-center">
             @foreach (['hombre', 'mujer', 'otro'] as $g)
                 @php $dato = $porGenero->firstWhere('genero', $g); @endphp
                 <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
@@ -14,6 +13,14 @@
                     <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $dato->total ?? 0 }}</dd>
                 </div>
             @endforeach
+            <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
+                <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">Registrados</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalRegistrados }}</dd>
+            </div>
+            <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
+                <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">Esperados</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalEsperados }}</dd>
+            </div>
         </div>
 
         <div class="bg-white shadow-md overflow-hidden">
