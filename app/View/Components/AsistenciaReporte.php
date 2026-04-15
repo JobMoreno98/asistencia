@@ -1,35 +1,38 @@
 <?php
 
-namespace App\View\Components;
+namespace App\Livewire; // Asegúrate de que el namespace sea Livewire
 
 use App\Models\Asistencia;
-use Closure;
+use App\Models\Persona;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
-use Illuminate\View\Component;
+use Livewire\Component;
 
 class AsistenciaReporte extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public function render(): View
     {
-        //
-    }
+        // Conteo de registros actuales por género
+        $asistencias = Asistencia::select('genero', DB::raw('count(*) as total'))
+            ->groupBy('genero')
+            ->get();
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
-    {
-        return view('components.asistencia-reporte', [
-            'porGenero' => Asistencia::select('genero', DB::raw('count(*) as total'))
-                ->groupBy('genero')
-                ->get(),
-            'porAula' => Asistencia::select('aula', DB::raw('count(*) as total'))
-                ->groupBy('aula')
-                ->get()
+        // Obtener listado por aula comparando Registrados vs Esperados
+        $reporteAulas = DB::table('personas')
+            ->select(
+                'aula',
+                DB::raw('count(*) as esperados'),
+                DB::raw('(SELECT count(*) FROM asistencias WHERE asistencias.aula = personas.aula) as registrados')
+            )
+            ->groupBy('aula')
+            ->get();
+
+        // IMPORTANTE: Retornar la vista y pasar los datos en un array
+        return view('livewire.asistencia-reporte', [
+            'porGenero' => $asistencias,
+            'reporteAulas' => $reporteAulas,
+            'totalRegistrados' => Asistencia::count(),
+            'totalEsperados' => Persona::count(),
         ]);
     }
 }

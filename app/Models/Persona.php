@@ -16,6 +16,6 @@ class Persona extends Model
     // Relación opcional: Una persona tiene muchas asistencias
     public function asistencias()
     {
-        return $this->hasMany(Asistencia::class, 'codigo_persona', 'codigo');
+        return $this->hasMany(Asistencia::class, 'codigo', 'codigo');
     }   
 }

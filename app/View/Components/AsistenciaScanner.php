@@ -6,7 +6,7 @@ use App\Models\Asistencia;
 use App\Models\Persona;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
+use Livewire\Component;
 
 class AsistenciaScanner extends Component
 {
@@ -25,28 +25,30 @@ class AsistenciaScanner extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.asistencia-scanner');
+        return view('livewire.asistencia-scanner');
     }
 
     public function registrar()
     {
-        // Buscamos a la persona en tu tabla de usuarios/alumnos
+        // Limpiamos espacios en blanco por si el escáner añade alguno
+        $this->codigo = trim($this->codigo);
+
+        if (empty($this->codigo)) return;
+
         $persona = Persona::where('codigo', $this->codigo)->first();
-        $yaRegistro = Asistencia::where('codigo_persona', $this->codigo)
-            ->where('created_at', '>=', now()->subMinutes(5))
-            ->exists();
-        if ($yaRegistro) {
+
+        if ($persona) {
             Asistencia::create([
                 'codigo_persona' => $persona->codigo,
                 'genero' => $persona->genero,
-                'aula' => $persona->aula_actual, // O el aula que definas
+                'aula' => $persona->aula,
             ]);
-
-            session()->flash('message', "Asistencia registrada: {$persona->nombre}");
+            session()->flash('message', "✅ Asistencia: {$persona->nombre}");
         } else {
-            session()->flash('error', "Código no reconocido");
+            session()->flash('error', "❌ Código {$this->codigo} no encontrado");
         }
 
-        $this->reset('codigo'); // Limpia el input para el siguiente escaneo
+        // Limpiamos para el siguiente
+        $this->reset('codigo');
     }
 }
