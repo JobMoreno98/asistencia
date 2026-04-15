@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -7,11 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Asistencia UdeG</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
     @livewireStyles {{-- 1. Estilos aquí --}}
 </head>
 
 <body>
     @livewire('asistencia-scanner')
+
     @livewireScripts {{-- 2. Scripts aquí --}}
 </body>
 
