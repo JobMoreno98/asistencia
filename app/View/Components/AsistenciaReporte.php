@@ -27,12 +27,16 @@ class AsistenciaReporte extends Component
             ->groupBy('aula')
             ->get();
 
+        $total = Persona::get();
+
+        $asistidos = Asistencia::get();
+
         // IMPORTANTE: Retornar la vista y pasar los datos en un array
         return view('livewire.asistencia-reporte', [
             'porGenero' => $asistencias,
             'reporteAulas' => $reporteAulas,
-            'totalRegistrados' => Asistencia::count(),
-            'totalEsperados' => Persona::count(),
+            'totalRegistrados' => $asistidos,
+            'totalEsperados' => $total,
         ]);
     }
 }

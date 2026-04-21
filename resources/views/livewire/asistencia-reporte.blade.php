@@ -1,25 +1,75 @@
 <div class="bg-gray-100 min-h-screen p-8 font-sans">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <div class="border-b-2 border-blue-900 mb-8 pb-4">
             <h1 class="text-3xl font-light text-gray-800 uppercase tracking-wide">Control de Asistencia
             </h1>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 items-center">
+            @php
+                $genero = ['M' => 'Masculino', 'F' => 'Femenino', 'X' => 'Otro'];
+            @endphp
             @foreach (['M', 'F', 'X'] as $g)
-                @php $dato = $porGenero->firstWhere('genero', $g); @endphp
+                @php
+                    $dato = $porGenero->firstWhere('genero', $g)->total ?? 0;
+                    //dd($dato, $totalRegistrados->where('genero', $g)->count());
+                @endphp
                 <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
-                    <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">{{ $g }}</dt>
-                    <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $dato->total ?? 0 }}</dd>
+                    <dt class="text-md font-medium text-gray-500 uppercase tracking-wider">{{ $g }}</dt>
+                    <div class="overflow-x-auto mt-6">
+                        <table class="min-w-full border border-blue-900 rounded-lg shadow-lg">
+                            <thead>
+                                <tr class="bg-blue-800 text-white">
+                                    <th class="px-6 py-3 text-left text-sm font-semibold"></th>
+                                    <th class="px-6 py-3 text-center text-sm font-semibold">Cantidad</th>
+                                    <th class="px-6 py-3 text-center text-sm font-semibold">%</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-blue-900">
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-6 py-4 text-gray-900 font-medium">Registrados</td>
+                                    <td class="px-2 py-2 text-center text-gray-700">
+                                        {{ $totalEsperados->where('genero', $g)->count() }}
+                                    </td>
+                                    <td class="px-2 py-2 text-center text-gray-700">
+                                        {{ round(($totalEsperados->where('genero', $g)->count() * 100) / $totalEsperados->count(), 2) }}
+                                        %
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-green-50 transition-colors">
+                                    <td class="px-6 py-4 text-gray-900 font-medium">Asistidos</td>
+                                    <td class="px-2 py-2 text-center text-gray-700">{{ $dato }}</td>
+                                    <td class="px-2 py-2 text-center text-gray-700">
+                                        {{ round(($dato * 100) / $totalEsperados->where('genero', $g)->count(), 2) }} %
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-red-50 transition-colors">
+                                    <td class="px-6 py-4 text-gray-900 font-medium">Faltantes</td>
+                                    <td class="px-2 py-2 text-center text-gray-700">
+                                        @php
+                                            $faltante = $totalEsperados->where('genero', $g)->count() - $dato;
+                                        @endphp
+                                        {{ $faltante }}
+                                    </td>
+                                    <td class="px-2 py-2 text-center text-gray-700">
+                                        {{ round(($faltante * 100) / $totalEsperados->where('genero', $g)->count(), 2) }}
+                                        %
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             @endforeach
             <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
                 <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">Registrados</dt>
-                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalRegistrados }}</dd>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalRegistrados->count() }} |
+                    {{ round(($totalRegistrados->count() * 100) / $totalEsperados->count(), 2) }} %</dd>
             </div>
             <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
                 <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">Esperados</dt>
-                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalEsperados }}</dd>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalEsperados->count() }} | 100%</dd>
             </div>
         </div>
 
