@@ -6,7 +6,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 items-center">
-            @foreach (['hombre', 'mujer', 'otro'] as $g)
+            @foreach (['M', 'F', 'X'] as $g)
                 @php $dato = $porGenero->firstWhere('genero', $g); @endphp
                 <div class="bg-white border-l-4 border-blue-800 shadow-sm p-6">
                     <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">{{ $g }}</dt>
