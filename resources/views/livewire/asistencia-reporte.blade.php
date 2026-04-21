@@ -1,7 +1,9 @@
 <div class="bg-gray-100 min-h-screen p-8 font-sans">
     <div class="max-w-7xl mx-auto">
-        <div class="border-b-2 border-blue-900 mb-8 pb-4">
-            <h1 class="text-3xl font-light text-gray-800 uppercase tracking-wide">Control de Asistencia
+        <div class="border-b-2 bg-blue-900 mb-8  flex items-center  rounded-md">
+            <img src="{{ asset('img/cucshBlanco.png') }}" alt="Logo" width="150px">
+            <h1 class="pl-1 text-3xl font-light font-semibold uppercase tracking-wide text-white border-l-2 border-white">
+                Control de Asistencia
             </h1>
         </div>
 
@@ -32,8 +34,7 @@
                                         {{ $totalEsperados->where('genero', $g)->count() }}
                                     </td>
                                     <td class="px-2 py-2 text-center text-gray-700">
-                                        {{ round(($totalEsperados->where('genero', $g)->count() * 100) / $totalEsperados->count(), 2) }}
-                                        %
+                                        {{ round(($totalEsperados->where('genero', $g)->count() * 100) / $totalEsperados->count(), 2) }} %
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-green-50 transition-colors">
