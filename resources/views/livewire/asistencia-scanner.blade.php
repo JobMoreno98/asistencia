@@ -10,7 +10,7 @@
         placeholder="ESCANEAR..." autofocus autocomplete="off">
 
     <div id="feedback-pantalla"
-        class="mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors">
+        class="mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors">
         <p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>
     </div>
 
@@ -18,6 +18,17 @@
         <span>Modo: Offline-Ready</span>
         <span>Pendientes: <span id="pendientes-num">0</span></span>
     </div>
+
+    <!-- NUEVO BOTÓN DE SINCRONIZACIÓN MANUAL -->
+    <button onclick="forzarSincronizacionTotal()"
+        class="mt-8 w-full py-2 bg-gray-200 hover:bg-blue-900 hover:text-white text-gray-600 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Actualizar Base de Datos y Sincronizar
+    </button>
 
     <script>
         (function() {
@@ -44,7 +55,28 @@
 
             // Guardamos la fusión para mantener consistencia
             localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
+            window.forzarSincronizacionTotal = function() {
+                var cola = JSON.parse(localStorage.getItem('asistencias_cola') || '[]');
 
+                window.mostrarFeedback('SINCRONIZANDO...', 'bg-green-600 text-white');
+
+                if (cola.length > 0) {
+                    // Si hay datos, primero los mandamos
+                    @this.call('sincronizarMasivo', cola).then(success => {
+                        if (success) {
+                            localStorage.setItem('asistencias_cola', '[]');
+                            window.actualizarContador();
+                            // Una vez sincronizado, refrescamos para traer la DB nueva
+                            window.location.reload();
+                        } else {
+                            alert("Error al sincronizar. Verifique su conexión.");
+                        }
+                    });
+                } else {
+                    // Si no hay nada pendiente, solo refrescamos la DB
+                    window.location.reload();
+                }
+            };
             // 3. FUNCIONES DE LÓGICA
             window.validarOffline = function(codigo) {
                 var persona = personasMap.get(codigo);
@@ -74,11 +106,11 @@
             window.mostrarFeedback = function(html, clases) {
                 pantalla.innerHTML = `<div class="text-center font-bold">${html}</div>`;
                 pantalla.className =
-                    `mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-b-8 p-4 shadow-lg ${clases}`;
+                    `mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-b-8 p-4 shadow-lg ${clases}`;
 
                 setTimeout(function() {
                     pantalla.className =
-                        "mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
+                        "mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
                     pantalla.innerHTML =
                         '<p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>';
                 }, 3500);
