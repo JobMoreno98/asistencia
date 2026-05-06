@@ -10,27 +10,23 @@ new class extends Component {
 
     public function with(): array
     {
-        // Enviamos la lista de personas para la validación offline
-public function with(): array
-{
-    // 1. Obtenemos los códigos que YA registraron asistencia hoy
-    $asistenciasHoy = Asistencia::whereDate('created_at', now()->today())
-        ->pluck('codigo') // Trae solo un array de códigos ['123', '456']
-        ->toArray();
+        // 1. Obtenemos los códigos que YA registraron asistencia hoy
+        $asistenciasHoy = Asistencia::whereDate('created_at', now()->today())
+            ->pluck('codigo') // Trae solo un array de códigos ['123', '456']
+            ->toArray();
 
-    // 2. Traemos a las personas
-    $personas = Persona::select('codigo', 'nombre', 'genero', 'aula')->get();
+        // 2. Traemos a las personas
+        $personas = Persona::select('codigo', 'nombre', 'genero', 'aula')->get();
 
-    return [
-        'dbLocal' => $personas,
-        'yaRegistrados' => $asistenciasHoy // Enviamos este array extra
-    ];
-}
+        return [
+            'dbLocal' => $personas,
+            'yaRegistrados' => $asistenciasHoy, // Enviamos este array extra
+        ];
     }
 
     public function sincronizarMasivo($lote)
     {
-        \Log::info("Sincronizando lote de: " . count($lote));
+        \Log::info('Sincronizando lote de: ' . count($lote));
         try {
             DB::beginTransaction();
 
