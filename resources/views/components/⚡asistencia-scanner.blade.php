@@ -18,6 +18,7 @@ new class extends Component {
 
     public function sincronizarMasivo($lote)
     {
+        \Log::info("Sincronizando lote de: " . count($lote));
         try {
             DB::beginTransaction();
 
@@ -26,6 +27,8 @@ new class extends Component {
                 $yaExiste = Asistencia::where('codigo', $item['codigo'])
                     ->whereDate('created_at', now()->today())
                     ->exists();
+
+                dd('Prueba');
 
                 if (!$yaExiste) {
                     Asistencia::create([

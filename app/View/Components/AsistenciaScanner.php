@@ -6,49 +6,50 @@ use App\Models\Asistencia;
 use App\Models\Persona;
 use Closure;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class AsistenciaScanner extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public $codigo = '';
+    public string $codigo = '';
 
-    public function __construct()
+    public function with(): array
     {
-        //
+        return [
+            'dbLocal' => Persona::select('codigo', 'nombre', 'genero', 'aula')->get(),
+        ];
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+    public function sincronizarMasivo($lote)
     {
-        return view('livewire.asistencia-scanner');
-    }
+        \Log::info("Sincronizando lote de: " . count($lote));
+        try {
+            DB::beginTransaction();
 
-    public function registrar()
-    {
-        // Limpiamos espacios en blanco por si el escáner añade alguno
-        $this->codigo = trim($this->codigo);
+            foreach ($lote as $item) {
+                // Evitar duplicados en el servidor para el mismo día
+                $yaExiste = Asistencia::where('codigo', $item['codigo'])
+                    ->whereDate('created_at', now()->today())
+                    ->exists();
 
-        if (empty($this->codigo)) return;
+                dd('Prueba');
 
-        $persona = Persona::where('codigo', $this->codigo)->first();
+                if (!$yaExiste) {
+                    Asistencia::create([
+                        'codigo' => $item['codigo'],
+                        'genero' => $item['genero'],
+                        'aula' => $item['aula'],
+                        // Usamos la fecha real que capturó el dispositivo
+                        'created_at' => $item['fecha'],
+                    ]);
+                }
+            }
 
-        if ($persona) {
-            Asistencia::create([
-                'codigo_persona' => $persona->codigo,
-                'genero' => $persona->genero,
-                'aula' => $persona->aula,
-            ]);
-            session()->flash('message', "✅ Asistencia: {$persona->nombre}");
-        } else {
-            session()->flash('error', "❌ Código {$this->codigo} no encontrado");
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
         }
-
-        // Limpiamos para el siguiente
-        $this->reset('codigo');
     }
 }
