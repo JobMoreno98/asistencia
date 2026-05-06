@@ -32,8 +32,6 @@ class AsistenciaScanner extends Component
                     ->whereDate('created_at', now()->today())
                     ->exists();
 
-                dd('Prueba');
-
                 if (!$yaExiste) {
                     Asistencia::create([
                         'codigo' => $item['codigo'],

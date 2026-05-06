@@ -28,8 +28,6 @@ new class extends Component {
                     ->whereDate('created_at', now()->today())
                     ->exists();
 
-                dd('Prueba');
-
                 if (!$yaExiste) {
                     Asistencia::create([
                         'codigo' => $item['codigo'],

@@ -1,4 +1,9 @@
 <div class="p-6 max-w-lg mx-auto bg-white shadow-xl rounded-2xl border border-gray-200 font-sans">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-blue-900 font-black tracking-tighter text-xl">ASISTENCIA</h2>
+        <!-- Asegúrate de que este ID exista para la bolita de estado -->
+        <div id="status-bolita" class="w-3 h-3 rounded-full bg-gray-400"></div>
+    </div>
 
     <input type="text" id="lector"
         class="w-full p-4 text-2xl text-center border-2 border-blue-100 rounded-xl focus:border-blue-600 outline-none transition-all shadow-inner bg-gray-50"
@@ -35,17 +40,17 @@
                 var persona = personasMap.get(codigo);
 
                 if (!persona) {
-                    window.mostrarFeedback(`❌ ERROR<br><span class="text-lg">Código no encontrado</span>`, 'bg-red-600 text-white border-red-700');
+                    window.mostrarFeedback(`ERROR<br><span class="text-md">Código no encontrado</span>`, 'bg-red-600 text-white ');
                     return;
                 }
 
                 if (registradosHoy.has(codigo)) {
-                    window.mostrarFeedback(`⚠️ DUPLICADO<br><span class="text-lg">${persona.nombre} ya registró su entrada</span>`, 'bg-yellow-500 text-white border-yellow-600');
+                    window.mostrarFeedback(`DUPLICADO<br><span class="text-md">${persona.nombre} ya registró su entrada</span>`, 'bg-yellow-500 text-white ');
                     return;
                 }
 
                 // Éxito
-                window.mostrarFeedback(`✅ REGISTRADO<br><span class="text-2xl">${persona.nombre}</span>`, 'bg-green-500 text-white border-green-600');
+                window.mostrarFeedback(`REGISTRADO<br><span class="text-md">${persona.nombre}</span>`, 'bg-green-500 text-white ');
                 
                 registradosHoy.add(codigo);
                 localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
