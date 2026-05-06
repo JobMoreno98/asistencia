@@ -1,47 +1,49 @@
 <?php
 
-use Livewire\Volt\Component; // Asegúrate de que use Volt
+use Livewire\Volt\Component;
 use App\Models\Persona;
 use App\Models\Asistencia;
+use Illuminate\Support\Facades\DB;
 
 new class extends Component {
     public string $codigo = '';
 
-    public function registrar()
+    public function with(): array
     {
-        $this->codigo = trim($this->codigo);
+        // Enviamos la lista de personas para la validación offline
+        return [
+            'dbLocal' => Persona::select('codigo', 'nombre', 'genero', 'aula')->get(),
+        ];
+    }
 
-        if (empty($this->codigo)) {
-            return;
-        }
+    public function sincronizarMasivo($lote)
+    {
+        try {
+            DB::beginTransaction();
 
-        $persona = Persona::where('codigo', $this->codigo)->first();
+            foreach ($lote as $item) {
+                // Evitar duplicados en el servidor para el mismo día
+                $yaExiste = Asistencia::where('codigo', $item['codigo'])
+                    ->whereDate('created_at', now()->today())
+                    ->exists();
 
-        if ($persona) {
-            // 2. VALIDACIÓN: ¿Ya registró asistencia HOY?
-            $yaExiste = Asistencia::where('codigo', $this->codigo)
-                ->whereDate('created_at', now()->today()) // Filtra solo por la fecha de hoy
-                ->exists();
-
-            if ($yaExiste) {
-                session()->flash('error', "Ya registró su entrada hoy.");
-                $this->reset('codigo');
-                return; // Detiene el proceso
+                if (!$yaExiste) {
+                    Asistencia::create([
+                        'codigo' => $item['codigo'],
+                        'genero' => $item['genero'],
+                        'aula' => $item['aula'],
+                        // Usamos la fecha real que capturó el dispositivo
+                        'created_at' => $item['fecha'],
+                    ]);
+                }
             }
 
-            // 3. Si no existe, procedemos a crear el registro
-            Asistencia::create([
-                'codigo' => $persona->codigo,
-                'genero' => $persona->genero,
-                'aula' => $persona->aula,
-            ]);
-
-            session()->flash('message', "Registrado: {$persona->nombre}");
-        } else {
-            session()->flash('error', "Código {$this->codigo} no encontrado");
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
         }
-
-        $this->reset('codigo');
     }
 };
 ?>
