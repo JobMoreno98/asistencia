@@ -33,25 +33,39 @@
             // 2. CARGA DE DATOS
             var rawData = @json($dbLocal);
             var personasMap = new Map(rawData.map(p => [p.codigo, p]));
-            var registradosHoy = new Set(JSON.parse(localStorage.getItem('asistencias_duplicados') || '[]'));
+            // 1. Traemos lo que el servidor dice que ya se registró hoy
+            var yaRegistradosServidor = @json($yaRegistrados);
+
+            // 2. Traemos lo que el dispositivo tiene guardado localmente (por si acaso)
+            var yaRegistradosLocal = JSON.parse(localStorage.getItem('asistencias_duplicados') || '[]');
+
+            // 3. Fusionamos ambos en el Set para tener la lista completa
+            var registradosHoy = new Set([...yaRegistradosServidor, ...yaRegistradosLocal]);
+
+            // Guardamos la fusión para mantener consistencia
+            localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
 
             // 3. FUNCIONES DE LÓGICA
             window.validarOffline = function(codigo) {
                 var persona = personasMap.get(codigo);
 
                 if (!persona) {
-                    window.mostrarFeedback(`ERROR<br><span class="text-md">Código no encontrado</span>`, 'bg-red-600 text-white ');
+                    window.mostrarFeedback(`ERROR<br><span class="text-md">Código no encontrado</span>`,
+                        'bg-red-600 text-white ');
                     return;
                 }
 
                 if (registradosHoy.has(codigo)) {
-                    window.mostrarFeedback(`DUPLICADO<br><span class="text-md">${persona.nombre} ya registró su entrada</span>`, 'bg-yellow-500 text-white ');
+                    window.mostrarFeedback(
+                        `DUPLICADO<br><span class="text-md">${persona.nombre} ya registró su entrada</span>`,
+                        'bg-yellow-500 text-white ');
                     return;
                 }
 
                 // Éxito
-                window.mostrarFeedback(`REGISTRADO<br><span class="text-md">${persona.nombre}</span>`, 'bg-green-500 text-white ');
-                
+                window.mostrarFeedback(`REGISTRADO<br><span class="text-md">${persona.nombre}</span>`,
+                    'bg-green-500 text-white ');
+
                 registradosHoy.add(codigo);
                 localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
                 window.guardarEnLocalStorage(persona);
@@ -59,11 +73,14 @@
 
             window.mostrarFeedback = function(html, clases) {
                 pantalla.innerHTML = `<div class="text-center font-bold">${html}</div>`;
-                pantalla.className = `mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-b-8 p-4 shadow-lg ${clases}`;
+                pantalla.className =
+                    `mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-b-8 p-4 shadow-lg ${clases}`;
 
                 setTimeout(function() {
-                    pantalla.className = "mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
-                    pantalla.innerHTML = '<p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>';
+                    pantalla.className =
+                        "mt-8 min-h-[150px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
+                    pantalla.innerHTML =
+                        '<p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>';
                 }, 3500);
             };
 
