@@ -56,28 +56,45 @@
             // Guardamos la fusión para mantener consistencia
             localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
             window.forzarSincronizacionTotal = function() {
+                // PASO 1: Obtener lo que está en LocalStorage
                 var cola = JSON.parse(localStorage.getItem('asistencias_cola') || '[]');
 
-                window.mostrarFeedback('SINCRONIZANDO...', 'bg-green-600 text-white');
+                window.mostrarFeedback('PROCESANDO...', 'bg-green-700 text-white');
 
                 if (cola.length > 0) {
-                    // Si hay datos, primero los mandamos
-                    @this.call('sincronizarMasivo', cola).then(success => {
-                        if (success) {
-                            localStorage.setItem('asistencias_cola', '[]');
-                            window.actualizarContador();
-                            // Una vez sincronizado, refrescamos para traer la DB nueva
-                            window.location.reload();
-                        } else {
-                            alert("Error al sincronizar. Verifique su conexión.");
-                        }
-                    });
+                    // Enviar al servidor
+                    @this.call('sincronizarMasivo', cola)
+                        .then(function(success) {
+                            if (success === true) {
+                                // PASO 2: Dejar vacía la cola local solo tras éxito del servidor
+                                localStorage.setItem('asistencias_cola', '[]');
+                                localStorage.setItem('asistencias_duplicados', '[]');
+                                window.actualizarContador();
+
+                                window.mostrarFeedback('SINCRONIZADO', 'bg-green-600 text-white');
+
+                                // PASO 3: Recuperar lo que hay en la BD (Refrescando la página)
+                                // Esto vuelve a ejecutar el método with() del componente Volt
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 1000);
+                            } else {
+                                window.mostrarFeedback('ERROR EN SERVIDOR', 'bg-red-700 text-white');
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error(error);
+                            window.mostrarFeedback('SIN CONEXIÓN', 'bg-red-800 text-white');
+                        });
                 } else {
-                    // Si no hay nada pendiente, solo refrescamos la DB
-                    window.location.reload();
+                    // Si la cola ya estaba vacía, saltamos directo al PASO 3
+                    window.mostrarFeedback('ACTUALIZANDO BD...', 'bg-gray-600 text-white');
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 800);
                 }
             };
-            // 3. FUNCIONES DE LÓGICA
+
             window.validarOffline = function(codigo) {
                 var persona = personasMap.get(codigo);
 
