@@ -56,6 +56,7 @@
             // Guardamos la fusión para mantener consistencia
             localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
             window.forzarSincronizacionTotal = function() {
+                localStorage.clear()
                 // PASO 1: Obtener lo que está en LocalStorage
                 var cola = JSON.parse(localStorage.getItem('asistencias_cola') || '[]');
 
@@ -66,15 +67,12 @@
                     @this.call('sincronizarMasivo', cola)
                         .then(function(success) {
                             if (success === true) {
-                                // PASO 2: Dejar vacía la cola local solo tras éxito del servidor
                                 localStorage.setItem('asistencias_cola', '[]');
-                                localStorage.setItem('asistencias_duplicados', '[]');
+                                
                                 window.actualizarContador();
 
                                 window.mostrarFeedback('SINCRONIZADO', 'bg-green-600 text-white');
 
-                                // PASO 3: Recuperar lo que hay en la BD (Refrescando la página)
-                                // Esto vuelve a ejecutar el método with() del componente Volt
                                 setTimeout(function() {
                                     window.location.reload();
                                 }, 1000);
