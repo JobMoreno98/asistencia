@@ -11,7 +11,8 @@
 </head>
 
 <body>
-    @livewire('asistencia-reporte')
+
+    @livewire('asistencia-reporte', ['ciclo' => $ciclo])
 
     @livewireScripts
 </body>

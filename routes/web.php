@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PersonaController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -7,9 +8,17 @@ Route::view('/', 'welcome')->name('home');
 Route::view('/asistencias', 'reporte')->name('reporte');
 
 
-Route::get('/reporte', function () {
-    // Esta vista SOLO debe tener el layout y llamar a @livewire('asistencia-reporte')
-    return view('reporte'); 
+Route::get('/reporte/{ciclo}', function ($ciclo) {
+
+    return view('reporte', compact('ciclo'));
+});
+
+
+Route::get('/reporte-pdf/{ciclo}', [PersonaController::class, 'pdf']);
+
+
+Route::get('/reporte/{ciclo}', function ($ciclo) {
+    return view('reporte', compact('ciclo'));
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

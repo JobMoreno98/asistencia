@@ -2,7 +2,8 @@
     <div class="max-w-7xl mx-auto">
         <div class="border-b-2 bg-blue-900 mb-8  flex items-center  rounded-md">
             <img src="{{ asset('img/cucshBlanco.png') }}" alt="Logo" width="150px">
-            <h1 class="pl-1 text-3xl font-light font-semibold uppercase tracking-wide text-white border-l-2 border-white">
+            <h1
+                class="pl-1 text-3xl font-light font-semibold uppercase tracking-wide text-white border-l-2 border-white">
                 Control de Asistencia
             </h1>
         </div>
@@ -34,7 +35,8 @@
                                         {{ $totalEsperados->where('genero', $g)->count() }}
                                     </td>
                                     <td class="px-2 py-2 text-center text-gray-700">
-                                        {{ round(($totalEsperados->where('genero', $g)->count() * 100) / $totalEsperados->count(), 2) }} %
+                                        {{ round(($totalEsperados->where('genero', $g)->count() * 100) / $totalEsperados->count(), 2) }}
+                                        %
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-green-50 transition-colors">
@@ -72,6 +74,9 @@
                 <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">Esperados</dt>
                 <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalEsperados->count() }} | 100%</dd>
             </div>
+            <div >
+                Descargar informe
+            </div>
         </div>
 
         <div class="bg-white shadow-md overflow-hidden">
@@ -92,6 +97,9 @@
                                 Registrados</th>
                             <th
                                 class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Faltantes</th>
+                            <th
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Porcentaje de Asistencia</th>
                         </tr>
                     </thead>
@@ -107,6 +115,10 @@
                                     {{ $aula->esperados }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-blue-800">
                                     {{ $aula->registrados }}</td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-blue-800">
+                                    {{  $aula->esperados - $aula->registrados }}</td>
+
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center justify-center">
                                         <div class="w-full bg-gray-200 rounded-full h-2 max-w-[100px] mr-3">

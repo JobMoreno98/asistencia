@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\DB;
 
 new class extends Component {
     // Función para obtener los datos procesados
+
+    public $ciclo;
+
+    public function mount($ciclo)
+    {
+        $this->ciclo = $ciclo;
+    }
+
     public function with(): array
     {
         // 1. Conteo por género para las cards superiores
@@ -14,11 +22,9 @@ new class extends Component {
 
         // 2. Listado por aula: Cruza la tabla personas (esperados) con asistencias (registrados)
         // Usamos un LEFT JOIN para asegurar que aparezcan las aulas incluso si tienen 0 registrados
-        $reporteAulas = DB::table('personas')
-        ->select('aula', DB::raw('count(*) as esperados'), DB::raw('(SELECT count(*) FROM asistencias WHERE asistencias.aula = personas.aula) as registrados'))
-        ->groupBy('aula')->orderBy('registrados', 'desc')->get();
+        $reporteAulas = DB::table('personas')->select('aula', DB::raw('count(*) as esperados'), DB::raw('(SELECT count(*) FROM asistencias WHERE asistencias.aula = personas.aula) as registrados'))->where('ciclo', $this->ciclo)->groupBy('aula')->orderBy('registrados', 'desc')->get();
 
-        $total = Persona::get();
+        $total = Persona::where('ciclo', $this->ciclo)->get();
 
         $asistidos = Asistencia::get();
 
