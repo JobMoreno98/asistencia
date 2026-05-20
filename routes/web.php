@@ -14,7 +14,7 @@ Route::get('/reporte/{ciclo}', function ($ciclo) {
 });
 
 
-Route::get('/reporte-pdf/{ciclo}', [PersonaController::class, 'pdf']);
+Route::get('/reporte-pdf/{ciclo}', [PersonaController::class, 'pdf'])->name('reporte.pdf');
 
 
 Route::get('/reporte/{ciclo}', function ($ciclo) {

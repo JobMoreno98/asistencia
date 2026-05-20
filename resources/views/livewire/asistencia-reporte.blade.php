@@ -4,7 +4,7 @@
             <img src="{{ asset('img/cucshBlanco.png') }}" alt="Logo" width="150px">
             <h1
                 class="pl-1 text-3xl font-light font-semibold uppercase tracking-wide text-white border-l-2 border-white">
-                Control de Asistencia
+                Control de Asistencia CICLO {{ $ciclo }}
             </h1>
         </div>
 
@@ -74,8 +74,9 @@
                 <dt class="text-sm font-medium text-gray-500 uppercase tracking-wider">Esperados</dt>
                 <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $totalEsperados->count() }} | 100%</dd>
             </div>
-            <div >
-                Descargar informe
+            <div>
+                <a href="{{ route('reporte.pdf', $ciclo) }}" class="px-6 py-3 text-center text-sm font-semibold bg-blue-700  hover:bg-blue-900 transition-colors text-white rounded-lg">Ver informe</a>
+
             </div>
         </div>
 
@@ -117,7 +118,7 @@
                                     {{ $aula->registrados }}</td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-blue-800">
-                                    {{  $aula->esperados - $aula->registrados }}</td>
+                                    {{ $aula->esperados - $aula->registrados }}</td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center justify-center">

@@ -33,6 +33,7 @@ new class extends Component {
             'reporteAulas' => $reporteAulas,
             'totalRegistrados' => $asistidos,
             'totalEsperados' => $total,
+            'ciclo' => $this->ciclo
         ];
     }
 };
