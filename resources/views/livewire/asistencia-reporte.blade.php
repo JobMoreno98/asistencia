@@ -136,11 +136,5 @@
                 </table>
             </div>
         </div>
-
-        <div class="mt-8 flex justify-between items-center text-xs text-gray-400 uppercase tracking-widest">
-            <span>Generado: {{ now()->format('d/m/Y H:i') }}</span>
-            <button wire:click="$refresh"
-                class="border border-gray-300 px-4 py-2 hover:bg-gray-200 transition">Actualizar Datos</button>
-        </div>
     </div>
 </div>

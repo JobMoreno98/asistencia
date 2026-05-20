@@ -15,8 +15,9 @@
     </div>
 
     <div class="mt-6 flex justify-between text-[10px] text-gray-400 font-bold uppercase italic">
-        <span>Modo: Offline-Ready</span>
+        <span>Registrados: <span id="escaneados-num">0</span></span>
         <span>Pendientes: <span id="pendientes-num">0</span></span>
+
     </div>
 
     <!-- NUEVO BOTÓN DE SINCRONIZACIÓN MANUAL -->
@@ -29,6 +30,10 @@
         </svg>
         Actualizar Base de Datos y Sincronizar
     </button>
+    <button onclick="descargarCSV()"
+        class="mt-8 w-full py-2 bg-blue-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-2">
+        Descargar base de datos
+    </button>
 
     <script>
         (function() {
@@ -40,6 +45,7 @@
             var pantalla = document.getElementById('feedback-pantalla');
             var bolita = document.getElementById('status-bolita');
             var pendientesTxt = document.getElementById('pendientes-num');
+            var registrados = document.getElementById('registrados');
 
             // 2. CARGA DE DATOS
             var rawData = @json($dbLocal);
@@ -68,7 +74,7 @@
                         .then(function(success) {
                             if (success === true) {
                                 localStorage.setItem('asistencias_cola', '[]');
-                                
+
                                 window.actualizarContador();
 
                                 window.mostrarFeedback('SINCRONIZADO', 'bg-green-600 text-white');
@@ -115,6 +121,9 @@
 
                 registradosHoy.add(codigo);
                 localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
+
+                window.actualizarEscaneados();
+
                 window.guardarEnLocalStorage(persona);
             };
 
@@ -167,6 +176,7 @@
 
             window.actualizarContador = function() {
                 var cola = JSON.parse(localStorage.getItem('asistencias_cola') || '[]');
+
                 pendientesTxt.innerText = cola.length;
             };
 
@@ -188,6 +198,57 @@
             // Ejecución inicial
             window.actualizarContador();
             window.intentarSincronizar();
+
+
+
+            window.descargarCSV = function() {
+                var cola = JSON.parse(localStorage.getItem('asistencias_duplicados') || '[]');
+
+                if (cola.length === 0) {
+                    alert('No hay datos');
+                    return;
+                }
+
+                // Encabezados CSV
+                var csv = 'codigo,nombre,genero\n';
+
+                cola.forEach(function(item) {
+                    // Buscar persona completa
+                    console.log(item, personasMap.get(item))
+                    var persona = personasMap.get(item);
+
+                    var codigo = persona.codigo || '';
+                    var nombre = persona?.nombre || '';
+                    var genero = persona.genero || '';
+
+                    // Escapar comillas
+                    nombre = `"${String(nombre).replace(/"/g, '""')}"`;
+
+                    csv += `${codigo},${nombre},${genero}\n`;
+                });
+
+                // Crear archivo
+                var blob = new Blob([csv], {
+                    type: 'text/csv;charset=utf-8;'
+                });
+
+                // Descargar
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'asistencias.csv';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            window.actualizarEscaneados = function() {
+                var registrados = JSON.parse(
+                    localStorage.getItem('asistencias_duplicados') || '[]'
+                );
+
+                document.getElementById('escaneados-num').innerText = registrados.length;
+            };
         })();
     </script>
 </div>
