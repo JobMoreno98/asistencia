@@ -62,7 +62,8 @@
             // Guardamos la fusión para mantener consistencia
             localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
             window.forzarSincronizacionTotal = function() {
-                localStorage.clear()
+                localStorage.removeItem('asistencias_cola');
+                localStorage.removeItem('asistencias_duplicados');
                 // PASO 1: Obtener lo que está en LocalStorage
                 var cola = JSON.parse(localStorage.getItem('asistencias_cola') || '[]');
 
@@ -97,6 +98,7 @@
                         window.location.reload();
                     }, 800);
                 }
+                window.actualizarEscaneados();
             };
 
             window.validarOffline = function(codigo) {
@@ -149,6 +151,18 @@
                     fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
                 });
                 localStorage.setItem('asistencias_cola', JSON.stringify(cola));
+
+                var backup = JSON.parse(
+                    localStorage.getItem('asistencias_backup') || '[]'
+                );
+
+                backup.push(p);
+
+                localStorage.setItem(
+                    'asistencias_backup',
+                    JSON.stringify(backup)
+                );
+
                 window.actualizarContador();
                 window.intentarSincronizar();
             };
@@ -202,7 +216,7 @@
 
 
             window.descargarCSV = function() {
-                var cola = JSON.parse(localStorage.getItem('asistencias_duplicados') || '[]');
+                var cola = JSON.parse(localStorage.getItem('asistencias_backup') || '[]');
 
                 if (cola.length === 0) {
                     alert('No hay datos');
@@ -214,12 +228,13 @@
 
                 cola.forEach(function(item) {
                     // Buscar persona completa
-                    console.log(item, personasMap.get(item))
+                    //console.log(item, personasMap.get(item))
                     var persona = personasMap.get(item);
+                    console.log(item.codigo)
 
-                    var codigo = persona.codigo || '';
-                    var nombre = persona?.nombre || '';
-                    var genero = persona.genero || '';
+                    var codigo = item.codigo || '';
+                    var nombre = item?.nombre || '';
+                    var genero = item.genero || '';
 
                     // Escapar comillas
                     nombre = `"${String(nombre).replace(/"/g, '""')}"`;
@@ -244,7 +259,7 @@
 
             window.actualizarEscaneados = function() {
                 var registrados = JSON.parse(
-                    localStorage.getItem('asistencias_duplicados') || '[]'
+                    localStorage.getItem('asistencias_backup') || '[]'
                 );
 
                 document.getElementById('escaneados-num').innerText = registrados.length;
