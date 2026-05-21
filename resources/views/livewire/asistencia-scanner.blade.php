@@ -50,27 +50,21 @@
             // 2. CARGA DE DATOS
             var rawData = @json($dbLocal);
             var personasMap = new Map(rawData.map(p => [p.codigo, p]));
-            // 1. Traemos lo que el servidor dice que ya se registró hoy
             var yaRegistradosServidor = @json($yaRegistrados);
 
-            // 2. Traemos lo que el dispositivo tiene guardado localmente (por si acaso)
             var yaRegistradosLocal = JSON.parse(localStorage.getItem('asistencias_duplicados') || '[]');
 
-            // 3. Fusionamos ambos en el Set para tener la lista completa
             var registradosHoy = new Set([...yaRegistradosServidor, ...yaRegistradosLocal]);
 
-            // Guardamos la fusión para mantener consistencia
             localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
             window.forzarSincronizacionTotal = function() {
                 localStorage.removeItem('asistencias_cola');
                 localStorage.removeItem('asistencias_duplicados');
-                // PASO 1: Obtener lo que está en LocalStorage
                 var cola = JSON.parse(localStorage.getItem('asistencias_cola') || '[]');
 
                 window.mostrarFeedback('PROCESANDO...', 'bg-green-700 text-white');
 
                 if (cola.length > 0) {
-                    // Enviar al servidor
                     @this.call('sincronizarMasivo', cola)
                         .then(function(success) {
                             if (success === true) {
@@ -92,7 +86,6 @@
                             window.mostrarFeedback('SIN CONEXIÓN', 'bg-red-800 text-white');
                         });
                 } else {
-                    // Si la cola ya estaba vacía, saltamos directo al PASO 3
                     window.mostrarFeedback('ACTUALIZANDO BD...', 'bg-gray-600 text-white');
                     setTimeout(function() {
                         window.location.reload();
