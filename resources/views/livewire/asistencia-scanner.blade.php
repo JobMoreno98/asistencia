@@ -111,8 +111,11 @@
                     return;
                 }
 
-                window.mostrarFeedback(`REGISTRADO<br><span class="text-md">${persona.nombre}</span>`,
-                    'bg-green-500 text-white ');
+                window.mostrarFeedback(
+                    `REGISTRADO<br><span class="text-md">${persona.nombre}</span>`,
+                    'bg-green-500 text-white ',
+                    8000
+                );
 
                 registradosHoy.add(codigo);
                 localStorage.setItem('asistencias_duplicados', JSON.stringify(Array.from(registradosHoy)));
@@ -122,18 +125,16 @@
                 window.guardarEnLocalStorage(persona);
             };
 
-            window.mostrarFeedback = function(html, clases, autoReset = true) {
+            window.mostrarFeedback = function(html, clases, duracion = 4000) {
                 pantalla.innerHTML = `<div class="text-center font-bold">${html}</div>`;
                 pantalla.className =
                     `mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-b-8 p-4 shadow-lg ${clases}`;
-                if (autoReset) {
-                    setTimeout(function() {
-                        pantalla.className =
-                            "mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
-                        pantalla.innerHTML =
-                            '<p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>';
-                    }, 4000);
-                }
+                setTimeout(function() {
+                    pantalla.className =
+                        "mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
+                    pantalla.innerHTML =
+                        '<p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>';
+                }, duracion);
             };
 
             window.guardarEnLocalStorage = function(p) {
