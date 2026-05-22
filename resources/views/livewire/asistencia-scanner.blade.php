@@ -88,10 +88,9 @@
                         });
                 } else {
                     window.mostrarFeedback('ACTUALIZANDO BD...', 'bg-gray-600 text-white');
-                    /*
                     setTimeout(function() {
                         window.location.reload();
-                    }, 1500);*/
+                    }, 5000);
                 }
                 window.actualizarEscaneados();
             };
