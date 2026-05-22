@@ -76,7 +76,8 @@
 
                                 setTimeout(function() {
                                     window.location.reload();
-                                }, 4000);
+                                }, 1500);
+
                             } else {
                                 window.mostrarFeedback('ERROR EN SERVIDOR', 'bg-red-700 text-white');
                             }
@@ -89,7 +90,7 @@
                     window.mostrarFeedback('ACTUALIZANDO BD...', 'bg-gray-600 text-white');
                     setTimeout(function() {
                         window.location.reload();
-                    }, 4000);
+                    }, 1500);
                 }
                 window.actualizarEscaneados();
             };
@@ -110,7 +111,6 @@
                     return;
                 }
 
-                // Éxito
                 window.mostrarFeedback(`REGISTRADO<br><span class="text-md">${persona.nombre}</span>`,
                     'bg-green-500 text-white ');
 
