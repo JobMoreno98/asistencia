@@ -76,7 +76,7 @@
 
                                 setTimeout(function() {
                                     window.location.reload();
-                                }, 1000);
+                                }, 4000);
                             } else {
                                 window.mostrarFeedback('ERROR EN SERVIDOR', 'bg-red-700 text-white');
                             }
@@ -89,7 +89,7 @@
                     window.mostrarFeedback('ACTUALIZANDO BD...', 'bg-gray-600 text-white');
                     setTimeout(function() {
                         window.location.reload();
-                    }, 800);
+                    }, 4000);
                 }
                 window.actualizarEscaneados();
             };
@@ -126,13 +126,12 @@
                 pantalla.innerHTML = `<div class="text-center font-bold">${html}</div>`;
                 pantalla.className =
                     `mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-b-8 p-4 shadow-lg ${clases}`;
-
                 setTimeout(function() {
                     pantalla.className =
                         "mt-8 min-h-[50px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50 p-4 transition-colors";
                     pantalla.innerHTML =
                         '<p class="text-gray-400 uppercase text-xs font-bold tracking-widest">Esperando escaneo...</p>';
-                }, 3500);
+                }, 4000);
             };
 
             window.guardarEnLocalStorage = function(p) {
