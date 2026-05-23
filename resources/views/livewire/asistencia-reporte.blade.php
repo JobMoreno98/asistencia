@@ -30,7 +30,7 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-blue-900">
                                 <tr class="hover:bg-blue-50 transition-colors">
-                                    <td class="px-6 py-4 text-gray-900 font-medium">Registrados</td>
+                                    <td class="px-6 py-4 text-gray-900 font-medium">Aspirantes citados</td>
                                     <td class="px-2 py-2 text-center text-gray-700">
                                         {{ $totalEsperados->where('genero', $g)->count() }}
                                     </td>
@@ -40,14 +40,14 @@
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-green-50 transition-colors">
-                                    <td class="px-6 py-4 text-gray-900 font-medium">Asistidos</td>
+                                    <td class="px-6 py-4 text-gray-900 font-medium">Asistentes</td>
                                     <td class="px-2 py-2 text-center text-gray-700">{{ $dato }}</td>
                                     <td class="px-2 py-2 text-center text-gray-700">
                                         {{ round(($dato * 100) / $totalEsperados->where('genero', $g)->count(), 2) }} %
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-red-50 transition-colors">
-                                    <td class="px-6 py-4 text-gray-900 font-medium">Faltantes</td>
+                                    <td class="px-6 py-4 text-gray-900 font-medium">Ausentes</td>
                                     <td class="px-2 py-2 text-center text-gray-700">
                                         @php
                                             $faltante = $totalEsperados->where('genero', $g)->count() - $dato;
